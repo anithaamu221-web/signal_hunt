@@ -7,32 +7,28 @@ const HUNT_CONFIG = {
         // =========================
         // QR 1
         // =========================
-        // QR1 is always the starting QR.
-        // Its physical QR code never changes.
-
         {
             id: 1,
 
             question: `What is the output?
 
-total = 0
+x = 3
+y = 2
 
-for i in range(1, 6):
-    if i % 2 == 0:
-        total += i
-    else:
-        total -= i
+for i in range(2):
+    x = x + y
+    y = y + 1
 
-print(total)`,
+print(x)`,
 
             choices: [
-                "-3",
-                "3",
-                "5",
-                "-5"
+                "7",
+                "8",
+                "9",
+                "10"
             ],
 
-            answer: 0,
+            answer: 2,
 
             clue: "💡 Clue 1: Follow the clue to find your next QR.",
 
@@ -43,28 +39,23 @@ print(total)`,
         // =========================
         // QR 2
         // =========================
-        // QR2 can be connected from QR1, QR3 or QR4
-        // depending on the player's randomized route.
-
         {
             id: 2,
 
-            question: `What is the output?
+            question: `🐞 DEBUGGING CHALLENGE
 
-numbers = [3, 6, 9, 12]
-result = 0
+The following program should print the numbers 1, 2, 3, 4, 5.
 
-for n in numbers:
-    if n % 3 == 0 and n > 6:
-        result += n
+for i in range(1, 5):
+    print(i)
 
-print(result)`,
+What should be changed?`,
 
             choices: [
-                "9",
-                "21",
-                "27",
-                "30"
+                "range(0, 5)",
+                "range(1, 6)",
+                "range(1, 4)",
+                "print(i + 1)"
             ],
 
             answer: 1,
@@ -78,29 +69,32 @@ print(result)`,
         // =========================
         // QR 3
         // =========================
-
         {
             id: 3,
 
-            question: `🐞 FIND THE BUG
+            question: `🔍 FIND THE MISSING STATEMENT
 
-The following code is intended to print the numbers 1 to 5, but it doesn't work correctly.
+Complete the code so that it prints:
 
-for i in range(1, 5):
-    print(i)
+Even
 
-What should be changed?`,
+number = 12
+
+if __________________:
+    print("Even")
+else:
+    print("Odd")`,
 
             choices: [
-                "Change range(1, 5) to range(1, 6)",
-                "Change i to i + 1",
-                "Change print(i) to print(i + 1)",
-                "No change is required"
+                "number / 2 == 0",
+                "number % 2 == 0",
+                "number % 2 == 1",
+                "number / 2 == 1"
             ],
 
-            answer: 0,
+            answer: 1,
 
-            clue: "💡 Clue 3: You found the bug! Follow the clue to your next QR.",
+            clue: "💡 Clue 3: You found the missing statement! Follow the clue to your next QR.",
 
             clueImage: ""
         },
@@ -109,31 +103,23 @@ What should be changed?`,
         // =========================
         // QR 4
         // =========================
-
         {
             id: 4,
 
-            question: `🐞 FIND THE BUG
+            question: `What is the output?
 
-The code should print "Even" when the number is even.
-
-num = 8
-
-if num % 2 = 0:
-    print("Even")
-else:
-    print("Odd")
-
-What is the error?`,
+a = 10
+b = 3
+print(a % b)`,
 
             choices: [
-                "% should be /",
-                "= should be ==",
-                "num should be number",
-                "if should be for"
+                "1",
+                "3",
+                "0",
+                "10"
             ],
 
-            answer: 1,
+            answer: 0,
 
             clue: "💡 Clue 4: Excellent! Follow the clue to your next QR.",
 
@@ -144,26 +130,19 @@ What is the error?`,
         // =========================
         // QR 5
         // =========================
-        // QR5 is ALWAYS the final QR.
-        // Its question and answer remain unchanged.
-
         {
             id: 5,
 
-            question: `🔍 FIND THE CORRECT CONDITION
-
-You want to print "Eligible" if a person's age is 18 or above AND below 60.
-
-Which condition is correct?`,
+            question: `Which function is used to display something on the screen in Python?`,
 
             choices: [
-                "if age > 18 and age < 60:",
-                "if age >= 18 and age < 60:",
-                "if age >= 18 or age < 60:",
-                "if age > 18 or age >= 60:"
+                "show()",
+                "display()",
+                "print()",
+                "output()"
             ],
 
-            answer: 1,
+            answer: 2,
 
             clue: `🎉 Congratulations!
 
