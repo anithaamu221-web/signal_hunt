@@ -2,27 +2,42 @@ const game = document.getElementById("game");
 
 const MAX_ATTEMPTS = 2;
 
-// =====================================
-// GET QR NUMBER
-// =====================================
+// =====================================================
+// GET PHYSICAL QR NUMBER
+// =====================================================
 
 function getQRNumber() {
     const params = new URLSearchParams(window.location.search);
     const qr = Number(params.get("qr"));
+
     return Number.isInteger(qr) ? qr : null;
 }
 
-// =====================================
-// PLAYER STORAGE
-// =====================================
-// localStorage belongs to the individual browser/device.
-// The QR codes themselves do NOT change.
-// Each player gets their own randomized route.
+// =====================================================
+// LOCAL STORAGE
+// =====================================================
+// Each player/device gets its own random assignment.
+//
+// The physical QR codes do NOT change.
+//
+// Example:
+//
+// Player 1:
+// QR1 -> Q3
+// QR2 -> Q5
+// QR3 -> Q1
+// QR4 -> Q4
+// QR5 -> Q2
+//
+// Player 2 can get a completely different assignment.
+//
+// No question is repeated.
 
 function getJSON(key, fallback) {
     try {
         return JSON.parse(
-            localStorage.getItem(key) || JSON.stringify(fallback)
+            localStorage.getItem(key) ||
+            JSON.stringify(fallback)
         );
     } catch {
         return fallback;
@@ -30,190 +45,263 @@ function getJSON(key, fallback) {
 }
 
 function setJSON(key, value) {
-    localStorage.setItem(key, JSON.stringify(value));
+    localStorage.setItem(
+        key,
+        JSON.stringify(value)
+    );
 }
 
-// =====================================
-// COMPLETED QR STORAGE
-// =====================================
+// =====================================================
+// CREATE RANDOM QUESTION ASSIGNMENT
+// =====================================================
 
-function getCompletedQRs() {
-    return getJSON("completedQRs", []);
-}
+function createQuestionAssignment() {
 
-function saveCompletedQRs(list) {
-    setJSON("completedQRs", list);
-}
+    // Five question IDs
+    let questions = [1, 2, 3, 4, 5];
 
-function isCompleted(qrNumber) {
-    return getCompletedQRs().includes(qrNumber);
-}
+    // Fisher-Yates shuffle
+    for (let i = questions.length - 1; i > 0; i--) {
 
-function completeQR(qrNumber) {
-    const completed = getCompletedQRs();
+        const j =
+            Math.floor(
+                Math.random() * (i + 1)
+            );
 
-    if (!completed.includes(qrNumber)) {
-        completed.push(qrNumber);
-        saveCompletedQRs(completed);
+        [
+            questions[i],
+            questions[j]
+        ] = [
+            questions[j],
+            questions[i]
+        ];
     }
+
+    // Assign one unique question to
+    // each physical QR.
+
+    const assignment = {
+
+        1: questions[0],
+
+        2: questions[1],
+
+        3: questions[2],
+
+        4: questions[3],
+
+        5: questions[4]
+    };
+
+    setJSON(
+        "questionAssignment",
+        assignment
+    );
+
+    return assignment;
 }
 
-// =====================================
-// ATTEMPT STORAGE
-// =====================================
+// =====================================================
+// GET PLAYER'S ASSIGNMENT
+// =====================================================
+
+function getQuestionAssignment() {
+
+    let assignment =
+        getJSON(
+            "questionAssignment",
+            null
+        );
+
+    // Create the random assignment only once.
+    //
+    // Refreshing the page will NOT create
+    // a new assignment.
+
+    if (
+        !assignment ||
+        !assignment[1] ||
+        !assignment[2] ||
+        !assignment[3] ||
+        !assignment[4] ||
+        !assignment[5]
+    ) {
+
+        assignment =
+            createQuestionAssignment();
+    }
+
+    return assignment;
+}
+
+// =====================================================
+// GET QUESTION ASSIGNED TO PHYSICAL QR
+// =====================================================
+
+function getQuestionForQR(qrNumber) {
+
+    const assignment =
+        getQuestionAssignment();
+
+    const questionId =
+        Number(
+            assignment[qrNumber]
+        );
+
+    return HUNT_CONFIG.qrs.find(
+        qr =>
+            qr.id === questionId
+    );
+}
+
+// =====================================================
+// ATTEMPTS
+// =====================================================
 
 function getAttempts() {
-    return getJSON("qrAttempts", {});
-}
 
-function saveAttempts(attempts) {
-    setJSON("qrAttempts", attempts);
+    return getJSON(
+        "qrAttempts",
+        {}
+    );
 }
 
 function getAttemptsUsed(qrNumber) {
-    return getAttempts()[qrNumber] || 0;
+
+    const attempts =
+        getAttempts();
+
+    return attempts[qrNumber] || 0;
 }
 
 function addAttempt(qrNumber) {
-    const attempts = getAttempts();
 
-    attempts[qrNumber] = (attempts[qrNumber] || 0) + 1;
+    const attempts =
+        getAttempts();
 
-    saveAttempts(attempts);
+    attempts[qrNumber] =
+        (attempts[qrNumber] || 0) + 1;
+
+    setJSON(
+        "qrAttempts",
+        attempts
+    );
 
     return attempts[qrNumber];
 }
 
-// =====================================
-// LOCKED QUESTIONS
-// =====================================
+// =====================================================
+// COMPLETED QR CODES
+// =====================================================
 
-function getLockedQuestions() {
-    return getJSON("lockedQuestions", []);
+function getCompletedQRs() {
+
+    return getJSON(
+        "completedQRs",
+        []
+    );
 }
 
-function lockQuestion(qrNumber) {
-    const locked = getLockedQuestions();
+function isCompleted(qrNumber) {
 
-    if (!locked.includes(qrNumber)) {
-        locked.push(qrNumber);
-        setJSON("lockedQuestions", locked);
+    return getCompletedQRs()
+        .includes(qrNumber);
+}
+
+function completeQR(qrNumber) {
+
+    const completed =
+        getCompletedQRs();
+
+    if (
+        !completed.includes(qrNumber)
+    ) {
+
+        completed.push(qrNumber);
+
+        setJSON(
+            "completedQRs",
+            completed
+        );
     }
+}
+
+// =====================================================
+// LOCKED QUESTIONS
+// =====================================================
+
+function getLockedQuestions() {
+
+    return getJSON(
+        "lockedQuestions",
+        []
+    );
 }
 
 function isQuestionLocked(qrNumber) {
-    return getLockedQuestions().includes(qrNumber);
+
+    return getLockedQuestions()
+        .includes(qrNumber);
 }
 
-// =====================================
-// RANDOM PLAYER ROUTE
-// =====================================
-// QR1, QR2, QR3 and QR4 can connect to each other.
-// QR5 is ALWAYS the final QR.
-//
-// Example player A:
-// 1 -> 3 -> 2 -> 4 -> 5
-//
-// Example player B:
-// 1 -> 4 -> 2 -> 3 -> 5
-//
-// The physical QR images/URLs never change.
+function lockQuestion(qrNumber) {
 
-function getPlayerRoute() {
-    return getJSON("playerRoute", null);
-}
+    const locked =
+        getLockedQuestions();
 
-function createRandomRoute() {
-    // Keep QR1 as the fixed starting QR.
-    // Randomize only QR2, QR3 and QR4.
-    const middle = [2, 3, 4];
+    if (
+        !locked.includes(qrNumber)
+    ) {
 
-    // Fisher-Yates shuffle.
-    for (let i = middle.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [middle[i], middle[j]] = [middle[j], middle[i]];
+        locked.push(qrNumber);
+
+        setJSON(
+            "lockedQuestions",
+            locked
+        );
     }
-
-    // QR5 is always last.
-    const route = [1, ...middle, 5];
-
-    setJSON("playerRoute", route);
-
-    return route;
 }
 
-function ensurePlayerRoute() {
-    let route = getPlayerRoute();
-
-    // Create the route only once for this browser/device.
-    // Refreshing the page will not change the player's route.
-    if (!Array.isArray(route) || route.length !== 5) {
-        route = createRandomRoute();
-    }
-
-    return route;
-}
-
-function getNextQR(currentQR) {
-    const route = ensurePlayerRoute();
-    const index = route.indexOf(currentQR);
-
-    if (index === -1 || index >= route.length - 1) {
-        return null;
-    }
-
-    return HUNT_CONFIG.qrs.find(
-        qr => qr.id === route[index + 1]
-    ) || null;
-}
-
-function canAccessQR(qrNumber) {
-    const route = ensurePlayerRoute();
-    const index = route.indexOf(qrNumber);
-
-    if (index === -1) {
-        return false;
-    }
-
-    // QR1 is always available as the starting QR.
-    if (qrNumber === 1) {
-        return true;
-    }
-
-    // Every other QR requires the previous QR in this player's
-    // randomized route to have been completed.
-    const previousQR = route[index - 1];
-
-    return isCompleted(previousQR);
-}
-
-// =====================================
+// =====================================================
 // HOME
-// =====================================
+// =====================================================
 
 function showHome() {
-    game.innerHTML = `
-        <div class="icon">🔎</div>
 
-        <h1>${HUNT_CONFIG.title}</h1>
+    game.innerHTML = `
+
+        <div class="icon">
+            🔎
+        </div>
+
+        <h1>
+            ${HUNT_CONFIG.title}
+        </h1>
 
         <p>
             Scan a QR code to start.
         </p>
 
         <p class="small">
-            You have only ${MAX_ATTEMPTS} attempts for each question.
+            You have only
+            ${MAX_ATTEMPTS}
+            attempts for each question.
         </p>
+
     `;
 }
 
-// =====================================
+// =====================================================
 // LOCKED QR
-// =====================================
+// =====================================================
 
 function showLocked(qrNumber) {
+
     game.innerHTML = `
-        <div class="icon">🔒</div>
+
+        <div class="icon">
+            🔒
+        </div>
 
         <h1>
             QR ${qrNumber} Locked
@@ -224,174 +312,262 @@ function showLocked(qrNumber) {
         </p>
 
         <p>
-            You cannot continue from this question.
+            You cannot continue from this QR.
         </p>
+
     `;
 }
 
-// =====================================
-// WRONG QR / NOT NEXT
-// =====================================
+// =====================================================
+// SHOW QUESTION
+// =====================================================
 
-function showWrongQR(qrNumber) {
-    const route = ensurePlayerRoute();
-    const index = route.indexOf(qrNumber);
+function showQuestion(qrNumber) {
 
-    let expected = null;
+    const question =
+        getQuestionForQR(
+            qrNumber
+        );
 
-    if (index > 0) {
-        const previous = route[index - 1];
+    if (!question) {
 
-        if (!isCompleted(previous)) {
-            expected = previous;
-        }
+        game.innerHTML = `
+
+            <div class="icon">
+                ❌
+            </div>
+
+            <h1>
+                Question Not Found
+            </h1>
+
+        `;
+
+        return;
     }
 
-    game.innerHTML = `
-        <div class="icon">🧭</div>
+    const used =
+        getAttemptsUsed(
+            qrNumber
+        );
 
-        <h1>
-            QR ${qrNumber} is not your next QR
-        </h1>
-
-        ${
-            expected
-            ? `
-                <p>
-                    Complete QR ${expected} first.
-                </p>
-            `
-            : `
-                <p>
-                    Follow the clue from your previous question.
-                </p>
-            `
-        }
-    `;
-}
-
-// =====================================
-// QUESTION
-// =====================================
-
-function showQuestion(qr) {
-    const used = getAttemptsUsed(qr.id);
-    const remaining = MAX_ATTEMPTS - used;
+    const remaining =
+        Math.max(
+            0,
+            MAX_ATTEMPTS - used
+        );
 
     game.innerHTML = `
+
         <div class="badge">
-            QR ${qr.id}
+            QR ${qrNumber}
         </div>
 
         <h1 class="question">
-            ${qr.question}
+            ${question.question}
         </h1>
 
         <div class="attempts">
+
             ❤️ Attempts remaining:
-            <strong>${remaining}</strong>
+
+            <strong>
+                ${remaining}
+            </strong>
+
         </div>
 
         <div class="choices">
-            ${qr.choices.map(
+
+            ${question.choices.map(
                 (choice, index) => `
+
                     <button
                         class="choice"
-                        onclick="checkAnswer(${qr.id}, ${index})"
-                        ${used >= MAX_ATTEMPTS ? "disabled" : ""}
+                        onclick="
+                            checkAnswer(
+                                ${qrNumber},
+                                ${index}
+                            )
+                        "
+                        ${
+                            used >= MAX_ATTEMPTS
+                                ? "disabled"
+                                : ""
+                        }
                     >
+
                         <span class="letter">
-                            ${String.fromCharCode(65 + index)}
+                            ${String.fromCharCode(
+                                65 + index
+                            )}
                         </span>
 
                         ${choice}
+
                     </button>
+
                 `
             ).join("")}
+
         </div>
 
         <div id="message"></div>
+
     `;
 }
 
-// =====================================
+// =====================================================
 // CHECK ANSWER
-// =====================================
+// =====================================================
 
-function checkAnswer(qrNumber, selectedAnswer) {
-    const qr = HUNT_CONFIG.qrs.find(
-        item => item.id === qrNumber
-    );
+function checkAnswer(
+    physicalQR,
+    selectedAnswer
+) {
 
-    if (!qr) return;
+    // Get the question assigned to
+    // this physical QR for this player.
 
-    if (isQuestionLocked(qrNumber)) {
-        showLocked(qrNumber);
+    const question =
+        getQuestionForQR(
+            physicalQR
+        );
+
+    if (!question) return;
+
+    if (
+        isQuestionLocked(
+            physicalQR
+        )
+    ) {
+
+        showLocked(
+            physicalQR
+        );
+
         return;
     }
 
-    if (isCompleted(qrNumber)) {
-        showQuestion(qr);
+    // Prevent answering an already completed QR.
+    if (
+        isCompleted(
+            physicalQR
+        )
+    ) {
+
         return;
     }
 
-    const attemptsUsed = addAttempt(qrNumber);
-    const message = document.getElementById("message");
+    const attemptsUsed =
+        addAttempt(
+            physicalQR
+        );
 
-    // =================================
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+    // =================================================
     // CORRECT ANSWER
-    // =================================
+    // =================================================
 
-    if (selectedAnswer === qr.answer) {
-        completeQR(qrNumber);
+    if (
+        selectedAnswer ===
+        question.answer
+    ) {
 
-        const nextQR = getNextQR(qrNumber);
+        completeQR(
+            physicalQR
+        );
 
-        message.className = "success";
+        // =================================================
+        // CLUE LOGIC
+        // =================================================
+        //
+        // QR1-QR4:
+        // Show the clue belonging to the
+        // randomized question.
+        //
+        // QR5:
+        // ALWAYS show the fixed final clue.
+        //
+        // Therefore, even if Question 2
+        // is randomly assigned to QR5,
+        // QR5 will still show the fixed
+        // final clue.
+
+        let clue;
+
+        if (
+            physicalQR === 5
+        ) {
+
+            clue =
+                HUNT_CONFIG.finalClue;
+
+        } else {
+
+            clue =
+                question.clue;
+        }
+
+        message.className =
+            "success";
 
         message.innerHTML = `
+
             <div class="correct">
                 ✅ Correct Answer!
             </div>
 
             <div class="clue">
-                <h2>💡 Clue</h2>
+
+                <h2>
+                    💡 Clue
+                </h2>
 
                 <p>
-                    ${qr.clue}
+                    ${clue}
                 </p>
 
                 ${
-                    qr.clueImage
-                    ? `
-                        <img
-                            src="${qr.clueImage}"
-                            alt="Clue"
-                        >
-                    `
-                    : ""
+                    question.clueImage
+                        ? `
+                            <img
+                                src="${question.clueImage}"
+                                alt="Clue"
+                            >
+                        `
+                        : ""
                 }
 
                 ${
-                    nextQR
-                    ? `
-                        <div class="next-route">
-                            <strong>
-                                Your next QR is QR ${nextQR.id}.
-                            </strong>
+                    physicalQR === 5
+                        ? `
+                            <h2>
+                                🎉 Hunt Completed!
+                            </h2>
+                        `
+                        : `
+                            <div class="next-route">
 
-                            <p>
-                                Follow the clue to find it.
-                            </p>
-                        </div>
-                    `
-                    : `
-                        <h2>
-                            🎉 Hunt Completed!
-                        </h2>
-                    `
+                                <strong>
+                                    Continue to the next QR.
+                                </strong>
+
+                                <p>
+                                    Follow the clue above
+                                    to find your next QR.
+                                </p>
+
+                            </div>
+                        `
                 }
+
             </div>
+
         `;
 
         disableChoices();
@@ -399,19 +575,31 @@ function checkAnswer(qrNumber, selectedAnswer) {
         return;
     }
 
-    // =================================
+    // =================================================
     // WRONG ANSWER
-    // =================================
+    // =================================================
 
-    const remaining = MAX_ATTEMPTS - attemptsUsed;
+    const remaining =
+        MAX_ATTEMPTS -
+        attemptsUsed;
 
-    if (attemptsUsed >= MAX_ATTEMPTS) {
-        lockQuestion(qrNumber);
+    if (
+        attemptsUsed >=
+        MAX_ATTEMPTS
+    ) {
 
-        message.className = "wrong";
+        lockQuestion(
+            physicalQR
+        );
+
+        message.className =
+            "wrong";
 
         message.innerHTML = `
-            ❌ <strong>Wrong answer!</strong>
+
+            ❌ <strong>
+                Wrong answer!
+            </strong>
 
             <br><br>
 
@@ -420,6 +608,7 @@ function checkAnswer(qrNumber, selectedAnswer) {
             <br>
 
             🔒 This question is now locked.
+
         `;
 
         disableChoices();
@@ -427,50 +616,70 @@ function checkAnswer(qrNumber, selectedAnswer) {
         return;
     }
 
-    message.className = "wrong";
+    message.className =
+        "wrong";
 
     message.innerHTML = `
-        ❌ <strong>Wrong answer!</strong>
+
+        ❌ <strong>
+            Wrong answer!
+        </strong>
 
         <br><br>
 
         You have
-        <strong>${remaining}</strong>
+        <strong>
+            ${remaining}
+        </strong>
         attempt remaining.
+
     `;
 }
 
-// =====================================
-// DISABLE CHOICES
-// =====================================
+// =====================================================
+// DISABLE ANSWER BUTTONS
+// =====================================================
 
 function disableChoices() {
+
     document
         .querySelectorAll(".choice")
         .forEach(button => {
+
             button.disabled = true;
+
         });
 }
 
-// =====================================
+// =====================================================
 // START GAME
-// =====================================
+// =====================================================
 
 function startGame() {
-    const qrNumber = getQRNumber();
 
-    if (qrNumber === null) {
+    const qrNumber =
+        getQRNumber();
+
+    if (
+        qrNumber === null
+    ) {
+
         showHome();
+
         return;
     }
 
-    const qr = HUNT_CONFIG.qrs.find(
-        item => item.id === qrNumber
-    );
+    // Only QR1-QR5 are valid.
+    if (
+        qrNumber < 1 ||
+        qrNumber > 5
+    ) {
 
-    if (!qr) {
         game.innerHTML = `
-            <div class="icon">❌</div>
+
+            <div class="icon">
+                ❌
+            </div>
 
             <h1>
                 QR Not Found
@@ -479,27 +688,34 @@ function startGame() {
             <p>
                 This QR code does not exist.
             </p>
+
         `;
 
         return;
     }
 
-    // Create the player's route when they first use the app.
-    ensurePlayerRoute();
+    // Create the player's random
+    // question assignment if it
+    // doesn't already exist.
 
-    // Only QR1 starts the hunt.
-    // QR2-QR5 must be reached through that player's route.
-    if (!canAccessQR(qrNumber)) {
-        showWrongQR(qrNumber);
+    getQuestionAssignment();
+
+    if (
+        isQuestionLocked(
+            qrNumber
+        )
+    ) {
+
+        showLocked(
+            qrNumber
+        );
+
         return;
     }
 
-    if (isQuestionLocked(qrNumber)) {
-        showLocked(qrNumber);
-        return;
-    }
-
-    showQuestion(qr);
+    showQuestion(
+        qrNumber
+    );
 }
 
 startGame();
