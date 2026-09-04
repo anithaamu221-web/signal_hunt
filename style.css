@@ -305,3 +305,40 @@ button {
     border-radius: 12px;
     text-align: center;
 }
+.choices {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.choice {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 55px;
+    padding: 14px 18px;
+    font-size: 18px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.choice .letter {
+    flex-shrink: 0;
+    font-weight: bold;
+    min-width: 28px;
+}
+
+.choice-text {
+    display: block;
+    visibility: visible;
+    opacity: 1;
+    font-weight: 500;
+    word-break: break-word;
+}
+
+.choice:disabled {
+    cursor: not-allowed;
+}
