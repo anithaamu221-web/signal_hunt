@@ -30,7 +30,9 @@ print(x)`,
 
             answer: 2,
 
-            clue: "💡 Clue 1: Follow the clue to find your next QR.",
+            clue: `I make dirty water clean and safe.
+You can find me at many venues.
+What am I?`,
 
             clueImage: ""
         },
@@ -60,7 +62,9 @@ What should be changed?`,
 
             answer: 1,
 
-            clue: "💡 Clue 2: Follow the clue to find your next QR.",
+            clue: `I go up and fill with air.
+You see me at parties and celebrations.
+What am I?`,
 
             clueImage: ""
         },
@@ -94,7 +98,9 @@ else:
 
             answer: 1,
 
-            clue: "💡 Clue 3: You found the missing statement! Follow the clue to your next QR.",
+            clue: `🔧 Where machines come for repair,
+🧪 where experiments take place, and
+🚗 where vehicles are fixed — look around the greenery nearby. 🌱`,
 
             clueImage: ""
         },
@@ -121,7 +127,8 @@ print(a % b)`,
 
             answer: 0,
 
-            clue: "💡 Clue 4: Excellent! Follow the clue to your next QR.",
+            clue: `Go and find the coordinator.
+And tell him the code "NexOra'26".`,
 
             clueImage: ""
         },
@@ -144,11 +151,8 @@ print(a % b)`,
 
             answer: 2,
 
-            clue: `🎉 Congratulations!
-
-You have successfully completed all 5 coding questions!
-
-Go to the final treasure location given by the organizer.`,
+            clue: `The admin Name: Madesh F17
+The Password: 19112657`,
 
             clueImage: ""
         }
