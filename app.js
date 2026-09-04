@@ -1,3 +1,4 @@
+
 const game = document.getElementById("game");
 
 const MAX_ATTEMPTS = 2;
@@ -16,22 +17,6 @@ function getQRNumber() {
 // =====================================================
 // LOCAL STORAGE
 // =====================================================
-// Each player/device gets its own random assignment.
-//
-// The physical QR codes do NOT change.
-//
-// Example:
-//
-// Player 1:
-// QR1 -> Q3
-// QR2 -> Q5
-// QR3 -> Q1
-// QR4 -> Q4
-// QR5 -> Q2
-//
-// Player 2 can get a completely different assignment.
-//
-// No question is repeated.
 
 function getJSON(key, fallback) {
     try {
@@ -54,10 +39,20 @@ function setJSON(key, value) {
 // =====================================================
 // CREATE RANDOM QUESTION ASSIGNMENT
 // =====================================================
+// All 5 questions are shuffled across the 5 physical QRs.
+// No question is repeated.
+//
+// Example:
+// QR1 -> Q3
+// QR2 -> Q5
+// QR3 -> Q1
+// QR4 -> Q4
+// QR5 -> Q2
+//
+// The physical QR codes themselves do not change.
 
 function createQuestionAssignment() {
 
-    // Five question IDs
     let questions = [1, 2, 3, 4, 5];
 
     // Fisher-Yates shuffle
@@ -77,19 +72,11 @@ function createQuestionAssignment() {
         ];
     }
 
-    // Assign one unique question to
-    // each physical QR.
-
     const assignment = {
-
         1: questions[0],
-
         2: questions[1],
-
         3: questions[2],
-
         4: questions[3],
-
         5: questions[4]
     };
 
@@ -102,8 +89,11 @@ function createQuestionAssignment() {
 }
 
 // =====================================================
-// GET PLAYER'S ASSIGNMENT
+// GET PLAYER ASSIGNMENT
 // =====================================================
+// The assignment is created only once.
+//
+// Refreshing the page will NOT reshuffle the questions.
 
 function getQuestionAssignment() {
 
@@ -112,11 +102,6 @@ function getQuestionAssignment() {
             "questionAssignment",
             null
         );
-
-    // Create the random assignment only once.
-    //
-    // Refreshing the page will NOT create
-    // a new assignment.
 
     if (
         !assignment ||
@@ -377,12 +362,17 @@ function showQuestion(qrNumber) {
 
         </div>
 
+        <!-- =================================================
+             VISIBLE CHOICE SECTION
+             ================================================= -->
+
         <div class="choices">
 
             ${question.choices.map(
                 (choice, index) => `
 
                     <button
+                        type="button"
                         class="choice"
                         onclick="
                             checkAnswer(
@@ -403,7 +393,9 @@ function showQuestion(qrNumber) {
                             )}
                         </span>
 
-                        ${choice}
+                        <span class="choice-text">
+                            ${choice}
+                        </span>
 
                     </button>
 
@@ -426,9 +418,6 @@ function checkAnswer(
     selectedAnswer
 ) {
 
-    // Get the question assigned to
-    // this physical QR for this player.
-
     const question =
         getQuestionForQR(
             physicalQR
@@ -449,7 +438,9 @@ function checkAnswer(
         return;
     }
 
-    // Prevent answering an already completed QR.
+    // Do not allow a completed QR
+    // to be answered again.
+
     if (
         isCompleted(
             physicalQR
@@ -469,9 +460,9 @@ function checkAnswer(
             "message"
         );
 
-    // =================================================
+    // =====================================================
     // CORRECT ANSWER
-    // =================================================
+    // =====================================================
 
     if (
         selectedAnswer ===
@@ -491,12 +482,10 @@ function checkAnswer(
         // randomized question.
         //
         // QR5:
-        // ALWAYS show the fixed final clue.
+        // ALWAYS show HUNT_CONFIG.finalClue.
         //
-        // Therefore, even if Question 2
-        // is randomly assigned to QR5,
-        // QR5 will still show the fixed
-        // final clue.
+        // Therefore, even if a different question
+        // is assigned to QR5, the final clue stays fixed.
 
         let clue;
 
@@ -575,9 +564,9 @@ function checkAnswer(
         return;
     }
 
-    // =================================================
+    // =====================================================
     // WRONG ANSWER
-    // =================================================
+    // =====================================================
 
     const remaining =
         MAX_ATTEMPTS -
@@ -669,7 +658,8 @@ function startGame() {
         return;
     }
 
-    // Only QR1-QR5 are valid.
+    // Only QR1-Q5 are valid.
+
     if (
         qrNumber < 1 ||
         qrNumber > 5
@@ -694,9 +684,8 @@ function startGame() {
         return;
     }
 
-    // Create the player's random
-    // question assignment if it
-    // doesn't already exist.
+    // Create the random assignment
+    // if the player doesn't have one.
 
     getQuestionAssignment();
 
@@ -717,5 +706,9 @@ function startGame() {
         qrNumber
     );
 }
+
+// =====================================================
+// RUN GAME
+// =====================================================
 
 startGame();
