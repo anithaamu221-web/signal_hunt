@@ -2,11 +2,21 @@ const HUNT_CONFIG = {
 
     title: "Coding QR Treasure Hunt",
 
+    // =====================================================
+    // FIXED FINAL CLUE
+    // =====================================================
+    // This clue is ALWAYS displayed when the player
+    // correctly answers the question assigned to QR5.
+
+    finalClue: `The admin Name: Madesh F17
+The Password: 19112657`,
+
     qrs: [
 
-        // =========================
-        // QR 1
-        // =========================
+        // =================================================
+        // QUESTION 1
+        // =================================================
+
         {
             id: 1,
 
@@ -28,6 +38,7 @@ print(x)`,
                 "10"
             ],
 
+            // C
             answer: 2,
 
             clue: `I make dirty water clean and safe.
@@ -38,9 +49,10 @@ What am I?`,
         },
 
 
-        // =========================
-        // QR 2
-        // =========================
+        // =================================================
+        // QUESTION 2
+        // =================================================
+
         {
             id: 2,
 
@@ -60,6 +72,7 @@ What should be changed?`,
                 "print(i + 1)"
             ],
 
+            // B
             answer: 1,
 
             clue: `I go up and fill with air.
@@ -70,9 +83,10 @@ What am I?`,
         },
 
 
-        // =========================
-        // QR 3
-        // =========================
+        // =================================================
+        // QUESTION 3
+        // =================================================
+
         {
             id: 3,
 
@@ -96,6 +110,7 @@ else:
                 "number / 2 == 1"
             ],
 
+            // B
             answer: 1,
 
             clue: `🔧 Where machines come for repair,
@@ -106,9 +121,10 @@ else:
         },
 
 
-        // =========================
-        // QR 4
-        // =========================
+        // =================================================
+        // QUESTION 4
+        // =================================================
+
         {
             id: 4,
 
@@ -125,6 +141,7 @@ print(a % b)`,
                 "10"
             ],
 
+            // A
             answer: 0,
 
             clue: `Go and find the coordinator.
@@ -134,9 +151,10 @@ And tell him the code "NexOra'26".`,
         },
 
 
-        // =========================
-        // QR 5
-        // =========================
+        // =================================================
+        // QUESTION 5
+        // =================================================
+
         {
             id: 5,
 
@@ -149,7 +167,12 @@ And tell him the code "NexOra'26".`,
                 "output()"
             ],
 
+            // C
             answer: 2,
+
+            // This clue is also kept here for reference,
+            // but app.js will use finalClue whenever
+            // this question is assigned to physical QR5.
 
             clue: `The admin Name: Madesh F17
 The Password: 19112657`,
