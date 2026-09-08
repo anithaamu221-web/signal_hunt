@@ -1,0 +1,188 @@
+const HUNT_CONFIG = {
+
+    title: "Coding QR Treasure Hunt",
+
+    // =====================================================
+    // FIXED FINAL CLUE
+    // =====================================================
+    // This clue is ALWAYS displayed when the player
+    // correctly answers the question assigned to QR5.
+
+    finalClue: `The admin Name: Madesh F17
+The Password: 19112657`,
+
+    qrs: [
+
+        // =================================================
+        // QUESTION 1
+        // =================================================
+
+        {
+            id: 1,
+
+            question: `What is the output?
+
+x = 3
+y = 2
+
+for i in range(2):
+    x = x + y
+    y = y + 1
+
+print(x)`,
+
+            choices: [
+                "7",
+                "8",
+                "9",
+                "10"
+            ],
+
+            // B  (trace: x=3+2=5,y=3 -> x=5+3=8,y=4 -> prints 8)
+            answer: 1,
+
+            clue: `I make dirty water clean and safe.
+You can find me at many venues.
+What am I?`,
+
+            clueImage: ""
+        },
+
+
+        // =================================================
+        // QUESTION 2
+        // =================================================
+
+        {
+            id: 2,
+
+            question: `🐞 DEBUGGING CHALLENGE
+
+The following program should print the numbers 1, 2, 3, 4, 5.
+
+for i in range(1, 5):
+    print(i)
+
+What should be changed?`,
+
+            choices: [
+                "range(0, 5)",
+                "range(1, 6)",
+                "range(1, 4)",
+                "print(i + 1)"
+            ],
+
+            // B
+            answer: 1,
+
+            clue: `I go up and fill with air.
+You see me at parties and celebrations.
+What am I?`,
+
+            clueImage: ""
+        },
+
+
+        // =================================================
+        // QUESTION 3
+        // =================================================
+
+        {
+            id: 3,
+
+            question: `🔍 FIND THE MISSING STATEMENT
+
+Complete the code so that it prints:
+
+Even
+
+number = 12
+
+if __________________:
+    print("Even")
+else:
+    print("Odd")`,
+
+            choices: [
+                "number / 2 == 0",
+                "number % 2 == 0",
+                "number % 2 == 1",
+                "number / 2 == 1"
+            ],
+
+            // B
+            answer: 1,
+
+            clue: `🔧 Where machines come for repair,
+🧪 where experiments take place, and
+🚗 where vehicles are fixed — look around the greenery nearby. 🌱`,
+
+            clueImage: ""
+        },
+
+
+        // =================================================
+        // QUESTION 4
+        // =================================================
+
+        {
+            id: 4,
+
+            question: `What is the output?
+
+a = 10
+b = 3
+print(a % b)`,
+
+            choices: [
+                "1",
+                "3",
+                "0",
+                "10"
+            ],
+
+            // A
+            answer: 0,
+
+            clue: `Go and find the coordinator.
+And tell him the code "NexOra'26".`,
+
+            clueImage: ""
+        },
+
+
+        // =================================================
+        // QUESTION 5
+        // =================================================
+
+        {
+            id: 5,
+
+            question: `Which function is used to display something on the screen in Python?`,
+
+            choices: [
+                "show()",
+                "display()",
+                "print()",
+                "output()"
+            ],
+
+            // C
+            answer: 2,
+
+            // IMPORTANT: this must NOT contain the real secret.
+            // Because questions are shuffled across all 5 physical
+            // QRs, this question can land on QR1-QR4, and app.js
+            // would display this "clue" text normally in that case.
+            // app.js only swaps in HUNT_CONFIG.finalClue when this
+            // question happens to land on physical QR5 - so keep
+            // this a generic, non-secret line.
+
+            clue: `Great job! Find the next QR code to continue.`,
+
+            clueImage: ""
+        }
+
+    ]
+
+};
