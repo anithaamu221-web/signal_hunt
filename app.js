@@ -12,23 +12,14 @@ function getQRNumber() {
     const params = new URLSearchParams(window.location.search);
     const qr = Number(params.get("qr"));
 
-    if (!Number.isInteger(qr)) {
-        return null;
-    }
-
-    return qr;
+    return Number.isInteger(qr) ? qr : null;
 }
 
 function getJSON(key, fallback) {
     try {
         const value = localStorage.getItem(key);
-
-        if (!value) {
-            return fallback;
-        }
-
-        return JSON.parse(value);
-    } catch (error) {
+        return value ? JSON.parse(value) : fallback;
+    } catch {
         return fallback;
     }
 }
@@ -43,7 +34,6 @@ function getAttempts() {
 
 function getAttemptsUsed(qrNumber) {
     const attempts = getAttempts();
-
     return Number(attempts[qrNumber] || 0);
 }
 
@@ -80,7 +70,10 @@ function markCompleted(qrNumber) {
 }
 
 function getDisqualified() {
-    return getJSON(STORAGE_KEYS.disqualified, []);
+    return getJSON(
+        STORAGE_KEYS.disqualified,
+        []
+    );
 }
 
 function isDisqualified(qrNumber) {
@@ -119,43 +112,82 @@ function seededShuffle(array, seed) {
         i--
     ) {
         const j =
-            Math.floor(random() * (i + 1));
+            Math.floor(
+                random() * (i + 1)
+            );
 
-        [result[i], result[j]] =
-            [result[j], result[i]];
+        [
+            result[i],
+            result[j]
+        ] = [
+            result[j],
+            result[i]
+        ];
     }
 
     return result;
 }
 
-function getClueAssignment() {
-    const FIXED_SHUFFLE_SEED = 260907;
+function getQuestionAssignment() {
+    const FIXED_QUESTION_SEED = 260907;
 
-    const shuffled =
+    const shuffledQuestions =
         seededShuffle(
             [1, 2, 3, 4],
-            FIXED_SHUFFLE_SEED
+            FIXED_QUESTION_SEED
         );
 
     return {
-        1: shuffled[0],
-        2: shuffled[1],
-        3: shuffled[2],
-        4: shuffled[3],
+        1: shuffledQuestions[0],
+        2: shuffledQuestions[1],
+        3: shuffledQuestions[2],
+        4: shuffledQuestions[3],
         5: 5
     };
 }
 
+function getClueAssignment() {
+    const FIXED_CLUE_SEED = 261122;
+
+    const shuffledClues =
+        seededShuffle(
+            [1, 2, 3, 4],
+            FIXED_CLUE_SEED
+        );
+
+    return {
+        1: shuffledClues[0],
+        2: shuffledClues[1],
+        3: shuffledClues[2],
+        4: shuffledClues[3],
+        5: 5
+    };
+}
+
+function getQuestionForQR(qrNumber) {
+    const assignment =
+        getQuestionAssignment();
+
+    const questionID =
+        assignment[qrNumber];
+
+    return HUNT_CONFIG.qrs.find(
+        item =>
+            Number(item.id) ===
+            Number(questionID)
+    );
+}
+
 function getClueForQR(qrNumber) {
+    if (qrNumber === 5) {
+        return HUNT_CONFIG.finalClue;
+    }
+
     const assignment =
         getClueAssignment();
 
     const clueID =
         assignment[qrNumber];
-
-    if (qrNumber === 5) {
-        return HUNT_CONFIG.finalClue;
-    }
 
     const clueQR =
         HUNT_CONFIG.qrs.find(
@@ -169,12 +201,28 @@ function getClueForQR(qrNumber) {
         : "";
 }
 
-function getQuestion(qrNumber) {
-    return HUNT_CONFIG.qrs.find(
-        item =>
-            Number(item.id) ===
-            Number(qrNumber)
-    );
+function getClueImageForQR(qrNumber) {
+    if (qrNumber === 5) {
+        return "";
+    }
+
+    const assignment =
+        getClueAssignment();
+
+    const clueID =
+        assignment[qrNumber];
+
+    const clueQR =
+        HUNT_CONFIG.qrs.find(
+            item =>
+                Number(item.id) ===
+                Number(clueID)
+        );
+
+    return clueQR &&
+        clueQR.clueImage
+        ? clueQR.clueImage
+        : "";
 }
 
 function showHome() {
@@ -200,7 +248,7 @@ function showDisqualified() {
         <div class="icon">🚫</div>
 
         <h1>
-            You are Disqualified
+            DISQUALIFIED
         </h1>
 
         <p>
@@ -209,7 +257,7 @@ function showDisqualified() {
         </p>
 
         <p>
-            No clue is available for this QR.
+            No clue is available.
         </p>
     `;
 }
@@ -217,6 +265,9 @@ function showDisqualified() {
 function showCompleted(qrNumber) {
     const clue =
         getClueForQR(qrNumber);
+
+    const image =
+        getClueImageForQR(qrNumber);
 
     game.innerHTML = `
         <div class="badge">
@@ -236,6 +287,17 @@ function showCompleted(qrNumber) {
                 <p>
                     ${clue}
                 </p>
+
+                ${
+                    image
+                    ? `
+                        <img
+                            src="${image}"
+                            alt="Clue image"
+                        >
+                    `
+                    : ""
+                }
             </div>
         </div>
     `;
@@ -243,7 +305,7 @@ function showCompleted(qrNumber) {
 
 function showQuestion(qrNumber) {
     const question =
-        getQuestion(qrNumber);
+        getQuestionForQR(qrNumber);
 
     if (!question) {
         game.innerHTML = `
@@ -252,7 +314,7 @@ function showQuestion(qrNumber) {
             </div>
 
             <h1>
-                QR Not Found
+                Question Not Found
             </h1>
         `;
 
@@ -263,10 +325,8 @@ function showQuestion(qrNumber) {
         getAttemptsUsed(qrNumber);
 
     const attemptsLeft =
-        Math.max(
-            0,
-            MAX_ATTEMPTS - attemptsUsed
-        );
+        MAX_ATTEMPTS -
+        attemptsUsed;
 
     game.innerHTML = `
         <div class="badge">
@@ -291,10 +351,12 @@ function showQuestion(qrNumber) {
                         <button
                             type="button"
                             class="choice"
-                            onclick="checkAnswer(
-                                ${qrNumber},
-                                ${index}
-                            )"
+                            onclick="
+                                checkAnswer(
+                                    ${qrNumber},
+                                    ${index}
+                                )
+                            "
                         >
                             <span class="letter">
                                 ${String.fromCharCode(
@@ -330,7 +392,7 @@ function checkAnswer(
     }
 
     const question =
-        getQuestion(qrNumber);
+        getQuestionForQR(qrNumber);
 
     if (!question) {
         return;
@@ -344,36 +406,28 @@ function checkAnswer(
         Number(question.answer)
     ) {
         markCompleted(qrNumber);
-
         showCorrectAnswer(qrNumber);
-
         return;
     }
 
     if (
         attemptNumber < MAX_ATTEMPTS
     ) {
-        showFirstWrongAnswer(qrNumber);
-
+        showFirstWrong(qrNumber);
         return;
     }
 
     disqualify(qrNumber);
-
     showDisqualified();
 }
 
-function showFirstWrongAnswer(qrNumber) {
+function showFirstWrong(qrNumber) {
     const message =
         document.getElementById("message");
 
     if (!message) {
         return;
     }
-
-    const remaining =
-        MAX_ATTEMPTS -
-        getAttemptsUsed(qrNumber);
 
     message.className = "wrong";
 
@@ -384,21 +438,22 @@ function showFirstWrongAnswer(qrNumber) {
 
         You have
         <strong>
-            ${remaining}
+            1
         </strong>
         chance remaining.
 
         <br><br>
 
-        <strong>
-            ⚠️ The clue is not shown.
-        </strong>
+        ⚠️ The clue is not shown.
     `;
 }
 
 function showCorrectAnswer(qrNumber) {
     const clue =
         getClueForQR(qrNumber);
+
+    const image =
+        getClueImageForQR(qrNumber);
 
     game.innerHTML = `
         <div class="badge">
@@ -418,6 +473,17 @@ function showCorrectAnswer(qrNumber) {
                 <p>
                     ${clue}
                 </p>
+
+                ${
+                    image
+                    ? `
+                        <img
+                            src="${image}"
+                            alt="Clue image"
+                        >
+                    `
+                    : ""
+                }
             </div>
         </div>
     `;
