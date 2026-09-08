@@ -1,0 +1,332 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #eef2ff, #f8fafc);
+    color: #111827;
+}
+
+.container {
+    width: 94%;
+    max-width: 700px;
+    margin: 40px auto;
+}
+
+.card {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 24px;
+    text-align: center;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.10);
+}
+
+.icon {
+    font-size: 55px;
+}
+
+h1 {
+    font-size: 32px;
+    margin: 15px 0;
+}
+
+.badge {
+    display: inline-block;
+    background: #111827;
+    color: #ffffff;
+    padding: 8px 15px;
+    border-radius: 30px;
+    font-weight: bold;
+}
+
+.question {
+    white-space: pre-wrap;
+    text-align: left;
+    font-family: monospace;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+/* ================================
+   ATTEMPTS
+================================ */
+
+.attempts {
+    margin: 15px 0;
+    padding: 12px;
+    background: #f3f4f6;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+/* ================================
+   VISIBLE ANSWER CHOICES
+================================ */
+
+.choices {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    margin-top: 22px;
+}
+
+.choice {
+    display: flex !important;
+    align-items: center;
+    width: 100%;
+    min-height: 58px;
+
+    padding: 14px 16px;
+
+    border: 2px solid #d1d5db;
+    border-radius: 14px;
+
+    background: #ffffff !important;
+    color: #111827 !important;
+
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+
+    text-align: left;
+    cursor: pointer;
+
+    visibility: visible !important;
+    opacity: 1 !important;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        transform 0.1s ease;
+}
+
+.choice:hover {
+    border-color: #6366f1;
+    background: #f5f3ff !important;
+}
+
+.choice:active {
+    transform: scale(0.98);
+}
+
+/* A / B / C / D circles */
+
+.choice .letter {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    width: 36px;
+    height: 36px;
+
+    margin-right: 10px;
+
+    border-radius: 50%;
+
+    background: #eef2ff !important;
+    color: #111827 !important;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Actual answer text */
+
+.choice-text {
+    display: block !important;
+
+    flex: 1;
+
+    color: #111827 !important;
+
+    font-size: 18px;
+    font-weight: 500;
+
+    line-height: 1.4;
+
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Disabled choices */
+
+.choice:disabled {
+    background: #f9fafb !important;
+    color: #374151 !important;
+
+    opacity: 0.65 !important;
+
+    cursor: not-allowed;
+}
+
+.choice:disabled .choice-text {
+    color: #374151 !important;
+}
+
+/* ================================
+   MESSAGE
+================================ */
+
+#message {
+    margin-top: 20px;
+}
+
+.success {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.correct {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.wrong {
+    margin-top: 20px;
+    padding: 15px;
+    background: #fef2f2;
+    border-radius: 12px;
+    color: #b91c1c;
+    font-weight: bold;
+}
+
+.clue {
+    background: #ffffff;
+    padding: 18px;
+    margin-top: 15px;
+    border-radius: 14px;
+    text-align: left;
+}
+
+.clue img {
+    width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+    border-radius: 12px;
+}
+
+.next-route {
+    margin-top: 18px;
+    padding: 14px;
+    background: #eef2ff;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.small {
+    color: #6b7280;
+}
+
+/* ================================
+   MOBILE VIEW
+================================ */
+
+@media (max-width: 600px) {
+
+    .container {
+        width: 96%;
+        margin: 10px auto;
+    }
+
+    .card {
+        padding: 18px 14px;
+        border-radius: 18px;
+    }
+
+    .icon {
+        font-size: 45px;
+    }
+
+    h1 {
+        font-size: 25px;
+    }
+
+    .question {
+        font-size: 16px;
+        line-height: 1.5;
+    }
+
+    .attempts {
+        font-size: 14px;
+    }
+
+    .choices {
+        gap: 10px;
+        margin-top: 18px;
+    }
+
+    .choice {
+        min-height: 54px;
+        padding: 12px 10px;
+
+        font-size: 16px;
+
+        border-width: 2px;
+        border-radius: 12px;
+    }
+
+    .choice .letter {
+        width: 32px;
+        height: 32px;
+
+        margin-right: 7px;
+
+        font-size: 14px;
+    }
+
+    .choice-text {
+        font-size: 16px;
+        line-height: 1.35;
+    }
+
+    .success {
+        padding: 15px;
+    }
+
+    .clue {
+        padding: 14px;
+    }
+}
+
+/* Extra-small phones */
+
+@media (max-width: 380px) {
+
+    .card {
+        padding: 15px 10px;
+    }
+
+    .choice {
+        min-height: 50px;
+        padding: 10px 8px;
+    }
+
+    .choice .letter {
+        width: 29px;
+        height: 29px;
+        margin-right: 6px;
+    }
+
+    .choice-text {
+        font-size: 15px;
+    }
+
+    .question {
+        font-size: 15px;
+    }
+}
