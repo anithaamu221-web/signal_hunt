@@ -1,96 +1,93 @@
 const HUNT_CONFIG = {
 
-    title: "Coding QR Treasure Hunt",
+title: "Signal Hunt",
 
-    // =====================================================
-    // FIXED FINAL CLUE
-    // =====================================================
-    // This clue is ALWAYS displayed when the player
-    // correctly answers the question assigned to QR5.
+// =====================================================
+// QR 5 FINAL CLUE
+// =====================================================
+// THIS CLUE NEVER CHANGES.
 
-    finalClue: `The admin Name: Madesh F17
+finalClue: `The admin Name: Madesh F17
+
+
 The Password: 19112657`,
 
-    qrs: [
 
-        // =================================================
-        // QUESTION 1
-        // =================================================
+qrs: [
 
-        {
-            id: 1,
+    {
+        id: 1,
 
-            question: `What is the output?
+        question: `What is the output?
+
 
 x = 3
 y = 2
 
 for i in range(2):
-    x = x + y
-    y = y + 1
+x = x + y
+y = y + 1
 
 print(x)`,
 
-            choices: [
-                "7",
-                "8",
-                "9",
-                "10"
-            ],
 
-            // C
-            answer: 2,
+        choices: [
+            "7",
+            "8",
+            "9",
+            "10"
+        ],
 
-            clue: `I make dirty water clean and safe.
+        answer: 2,
+
+        clue: `I make dirty water clean and safe.
+
+
 You can find me at many venues.
 What am I?`,
 
-            clueImage: ""
-        },
 
+        clueImage: ""
+    },
 
-        // =================================================
-        // QUESTION 2
-        // =================================================
+    {
+        id: 2,
 
-        {
-            id: 2,
+        question: `🐞 DEBUGGING CHALLENGE
 
-            question: `🐞 DEBUGGING CHALLENGE
 
 The following program should print the numbers 1, 2, 3, 4, 5.
 
 for i in range(1, 5):
-    print(i)
+print(i)
 
 What should be changed?`,
 
-            choices: [
-                "range(0, 5)",
-                "range(1, 6)",
-                "range(1, 4)",
-                "print(i + 1)"
-            ],
 
-            // B
-            answer: 1,
+        choices: [
+            "range(0, 5)",
+            "range(1, 6)",
+            "range(1, 4)",
+            "print(i + 1)"
+        ],
 
-            clue: `I go up and fill with air.
+        answer: 1,
+
+        clue: `I go up and fill with air.
+
+
 You see me at parties and celebrations.
 What am I?`,
 
-            clueImage: ""
-        },
 
+        clueImage: ""
+    },
 
-        // =================================================
-        // QUESTION 3
-        // =================================================
+    {
+        id: 3,
 
-        {
-            id: 3,
+        question: `🔍 FIND THE MISSING STATEMENT
 
-            question: `🔍 FIND THE MISSING STATEMENT
 
 Complete the code so that it prints:
 
@@ -99,87 +96,86 @@ Even
 number = 12
 
 if __________________:
-    print("Even")
+print("Even")
 else:
-    print("Odd")`,
+print("Odd")`,
 
-            choices: [
-                "number / 2 == 0",
-                "number % 2 == 0",
-                "number % 2 == 1",
-                "number / 2 == 1"
-            ],
 
-            // B
-            answer: 1,
+        choices: [
+            "number / 2 == 0",
+            "number % 2 == 0",
+            "number % 2 == 1",
+            "number / 2 == 1"
+        ],
 
-            clue: `🔧 Where machines come for repair,
+        answer: 1,
+
+        clue: `🔧 Where machines come for repair,
+
+
 🧪 where experiments take place, and
 🚗 where vehicles are fixed — look around the greenery nearby. 🌱`,
 
-            clueImage: ""
-        },
 
+        clueImage: ""
+    },
 
-        // =================================================
-        // QUESTION 4
-        // =================================================
+    {
+        id: 4,
 
-        {
-            id: 4,
+        question: `What is the output?
 
-            question: `What is the output?
 
 a = 10
 b = 3
 print(a % b)`,
 
-            choices: [
-                "1",
-                "3",
-                "0",
-                "10"
-            ],
 
-            // A
-            answer: 0,
+        choices: [
+            "1",
+            "3",
+            "0",
+            "10"
+        ],
 
-            clue: `Go and find the coordinator.
+        answer: 0,
+
+        clue: `Go and find the coordinator.
+
+
 And tell him the code "NexOra'26".`,
 
-            clueImage: ""
-        },
+
+        clueImage: ""
+    },
+
+    {
+        id: 5,
+
+        question: `Which function is used to display something on the screen in Python?`,
+
+        choices: [
+            "show()",
+            "display()",
+            "print()",
+            "output()"
+        ],
+
+        answer: 2,
+
+        // This is kept unchanged.
+        // app.js uses finalClue for QR5.
+
+        clue: `The admin Name: Madesh F17
 
 
-        // =================================================
-        // QUESTION 5
-        // =================================================
-
-        {
-            id: 5,
-
-            question: `Which function is used to display something on the screen in Python?`,
-
-            choices: [
-                "show()",
-                "display()",
-                "print()",
-                "output()"
-            ],
-
-            // C
-            answer: 2,
-
-            // This clue is also kept here for reference,
-            // but app.js will use finalClue whenever
-            // this question is assigned to physical QR5.
-
-            clue: `The admin Name: Madesh F17
 The Password: 19112657`,
 
-            clueImage: ""
-        }
 
-    ]
+        clueImage: ""
+    }
+
+]
+
 
 };
